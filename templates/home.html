@@ -30,9 +30,13 @@
                 <input type="text" name="username"> <br>
                 <input type="password" name="password"> <br>
             </div>
+            <div id="something"></div>
             <div class="modal-footer">
               <button type="button" id="submitButton" class="btn btn-primary">Save changes</button>
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </form>
+            <form action="{{ url_for('sse')}}" method="post">
+              <button type="button" class="btn btn-secondary" id="sse" class="btn btn-primary">sse</button>
             </form>
             </div>
           </div>

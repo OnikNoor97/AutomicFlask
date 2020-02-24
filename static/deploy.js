@@ -28,3 +28,29 @@ $(function ()
     });
   });
 });
+
+$(function () 
+{
+  $('#sse').click(function () 
+  {
+    $.ajax({
+      url: '/post',
+      data: $('form').serialize(),
+      type: 'POST',
+      success: function (response) {
+        console.log(response);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  });
+});
+
+var lol = document.getElementById("something");
+var eventSource = new EventSource("/post");
+eventSource.onmessage = function(e)
+{
+  console.log(e.data);
+  lol.innerHTML = e.data;
+}
