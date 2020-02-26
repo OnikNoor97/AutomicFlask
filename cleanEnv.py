@@ -17,7 +17,7 @@ class cleanEnv(AutomicLogin):
 
         versionArray = []
         for tr in soup.find_all('tr'):
-            value = [td.text.rstrip(" \nClean up app").strip() for td in tr.find_all('td')] # Gets rid of Clean up app button content
+            value = [td.text.strip().strip("Clean up app").strip("\n                  \n") for td in tr.find_all('td')] # Gets rid of Clean up app button content
             if '' not in value:
                 versionArray.append(value)
         versionArray.pop(0) # Gets rid of the key content
