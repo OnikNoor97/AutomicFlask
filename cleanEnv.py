@@ -17,9 +17,10 @@ class cleanEnv(AutomicLogin):
 
         versionArray = []
         for tr in soup.find_all('tr'):
-            value = [td.text.strip() for td in tr.find_all('td')]
+            value = [td.text.rstrip(" \nClean up app").strip() for td in tr.find_all('td')] # Gets rid of Clean up app button content
             if '' not in value:
                 versionArray.append(value)
+        versionArray.pop(0) # Gets rid of the key content
         cleanArray = [x for x in versionArray if x != []] # Gets rid of empty array to avoid index errors
         
         # 0 is application name
