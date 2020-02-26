@@ -21,6 +21,9 @@ class Validator:
                 if "-" in deployed[i]:
                     checker = True
                     break
+                if ("N/A") in deployed[i]: # N/A will be ignored, manual deployed for new applications will need to be done
+                    checker = False
+                    break
                 if  int(deployed[i]) < int(deploying[i]):
                     checker = True
                 i += 1
@@ -29,7 +32,7 @@ class Validator:
         return checker
 
 
-    # This function should return true if a branch version is not detected, this should be for cleaning environments
+    # This function should return true if a branch version is not detected, this should be for cleaning applications
     def ignoreBranch(self, deployingString, deployedString): #Tested (/)    
         
         deployed = deployedString.split(".")
@@ -46,6 +49,9 @@ class Validator:
         if len(deployed) == len(deploying):
             while (i < len(deployed)):
                 if "-" in deployed[i]:
+                    checker = False
+                    break
+                if ("N/A") in deployed[i]: # N/A will be ignored, manual deployed for new applications will need to be done
                     checker = False
                     break
                 if  int(deployed[i]) < int(deploying[i]):
