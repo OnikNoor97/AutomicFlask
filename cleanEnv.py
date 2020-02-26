@@ -11,23 +11,30 @@ class cleanEnv(AutomicLogin):
     def __init__(self, AutomicLogin):
         self.AutomicLogin = AutomicLogin
 
-    def get_applications(self, env):
+    def get_versions(self, env):
         data = requests.get('https://qastatus.eviivo.com/compare/PROD?environment='+env)
         soup = BeautifulSoup(data.text, 'html.parser')
 
         versionArray = []
         for tr in soup.find_all('tr'):
-            value = [td.text.strip().strip("Clean up app").strip("\n                  \n") for td in tr.find_all('td')] # Gets rid of Clean up app button content
+            value = [td.text.strip().strip("\n                  \n") for td in tr.find_all('td')] # Gets rid of Clean up app button content
             if '' not in value:
                 versionArray.append(value)
         versionArray.pop(0) # Gets rid of the key content
-        cleanArray = [x for x in versionArray if x != []] # Gets rid of empty array to avoid index errors
+        cleanArray = [x for x in versionArray if x != []] # Gets rid of empty array to avoid index errors, also removed applications with no prod version
         
         # 0 is application name
         # 1 is PROD version
         # 2 is env version
 
         return cleanArray
+
+    def get_application_id(self, AutomicLogin, applicationName):
+        r = requests.get(url+"/applications?max_results=100", auth=HTTPBasicAuth("100/"+AutomicLogin.username+"/EVIIVO" , AutomicLogin.password) )
+        jsonParse = r.json()
+        for i in jsonParse['data']:
+            if i['archived'] == False and i['name'] == applicationName:
+                return i['id']
     
     def getProfile(self, AutomicLogin, id, env): #Without Production
         r = requests.get(url+"/applications/"+str(id)+"/profiles?max_results=100", auth=HTTPBasicAuth("100/"+AutomicLogin.username+"/EVIIVO" , AutomicLogin.password) )
@@ -38,16 +45,15 @@ class cleanEnv(AutomicLogin):
                 profile = i['name']
         return profile
 
-    def post_deployment(self, AutomicLogin, applications, package, profile):
+    def post_deployment(self, AutomicLogin, application, package, profile):
         endpoint = url+"/executions"
-        for application in applications:
-            payload = {
+        payload =   {
                         'application': application,
                         'package': package,
                         'deployment_profile': profile,
                         'workflow' : 'Deployment'
-                        }
+                    }
         headers = {'content-type': 'application/json'}
-        r = requests.post(endpoint, auth=HTTPBasicAuth("100/"+AutomicLogin.username+"/EVIIVO" , AutomicLogin.password), data= json.dumps(payload), headers=headers)
+        r = requests.post(endpoint, auth=HTTPBasicAuth("100/"+AutomicLogin.username+"/EVIIVO" , AutomicLogin.password), data=json.dumps(payload), headers=headers)
         if (r.status_code != 201):
             print("Deployment request unsuccessful for \nApplication: "+application + "\nPackage: "+ package + "\nProfile: " + profile)
